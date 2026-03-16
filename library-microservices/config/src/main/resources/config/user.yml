@@ -1,0 +1,11 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=UserDB;trustServerCertificate=true;encrypt=true;
+    username: sa
+    password: ADMIN0
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

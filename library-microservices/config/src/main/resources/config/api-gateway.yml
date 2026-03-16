@@ -1,0 +1,34 @@
+server:
+  port: 8080
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: false
+              lower-case-service-id: true
+          routes:
+            - id: user
+              uri: lb://user
+              predicates:
+                - Path=/api/user/**
+              filters:
+                - StripPrefix=2
+            - id: book
+              uri: lb://book
+              predicates:
+                - Path=/api/book/**
+              filters:
+                - StripPrefix=2
+            - id: loan
+              uri: lb://loan
+              predicates:
+                - Path=/api/loan/**
+              filters:
+                - StripPrefix=2
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
