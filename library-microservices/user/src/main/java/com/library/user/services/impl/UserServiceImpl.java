@@ -8,15 +8,18 @@ import com.library.user.repositories.UserRepository;
 import com.library.user.services.UserService;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository,PasswordEncoder encoder) {
         this.userRepository = userRepository;
+        this.encoder = encoder;
     }
 
     @Override
@@ -25,6 +28,7 @@ public class UserServiceImpl implements UserService {
         if (validatedUser != null) {
             return null;
         }
+        user.setUserPassword(encoder.encode(user.getUserPassword()));
         return UserMapper.changeToDTO(userRepository.save(UserMapper.changeToEntity(user)));
     }
 
@@ -51,6 +55,6 @@ public class UserServiceImpl implements UserService {
         if(validatedUser == null){
             return false;
         }
-        return validatedUser.getUserPassword().equals(accessDTO.getUserPassword());
+        return encoder.matches(accessDTO.getUserPassword(), validatedUser.getUserPassword());
     }
 }
