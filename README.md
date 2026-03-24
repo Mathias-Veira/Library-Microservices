@@ -19,12 +19,11 @@ the eureka server itself and the config server.
 - loan-service: Manages borrowing books.
 Communication between services uses OpenFeign.
 # Current Features
-- User registration and login
-- Add, and list books by id, by book name, by author name and by availabilty
-- Borrow books
-- Track borrowed books by a user
+- User registration and login with password hashing using BCrypt.
+- Add, and list books by id, by book name, by author name and by availabilty.
+- Borrow books.
+- Track borrowed books by a user.
 # Future Features
-- Secure users passwords
 - Asynchronous communication between services using Kafka.
 - Use JWT (JSON Web Tokens) authentication.
 - Add testing using JUnit and Mockito.
