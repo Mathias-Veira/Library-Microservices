@@ -1,6 +1,7 @@
 package com.library.user.services.impl;
 
 import com.library.user.dtos.AccessDTO;
+import com.library.user.dtos.TokenDTO;
 import com.library.user.dtos.UserDTO;
 import com.library.user.mapper.UserMapper;
 import com.library.user.models.User;
@@ -16,10 +17,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
+    private final JWTService jwtService;
 
-    public UserServiceImpl(UserRepository userRepository,PasswordEncoder encoder) {
+    public UserServiceImpl(UserRepository userRepository,PasswordEncoder encoder,JWTService jwtService) {
         this.userRepository = userRepository;
         this.encoder = encoder;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -47,14 +50,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean login(AccessDTO accessDTO) {
+    public TokenDTO login(AccessDTO accessDTO) {
         if (StringUtils.isBlank(accessDTO.getUserEmail()) || StringUtils.isBlank(accessDTO.getUserPassword())) {
-            return false;
+            return null;
         }
         UserDTO validatedUser = getUserByEmail(accessDTO.getUserEmail());
         if(validatedUser == null){
-            return false;
+            return null;
         }
-        return encoder.matches(accessDTO.getUserPassword(), validatedUser.getUserPassword());
+        if(!encoder.matches(accessDTO.getUserPassword(), validatedUser.getUserPassword())){
+            return null;
+        }
+        return new TokenDTO(jwtService.generateToken(validatedUser.getUserName()), jwtService.generateRefreshToken(validatedUser.getUserName()));
+    }
+
+    @Override
+    public TokenDTO sendRefreshToken(String refreshToken) {
+        if(!jwtService.isRefreshtoken(refreshToken) || !jwtService.isValid(refreshToken)){
+            return null;
+        }
+        return new TokenDTO(jwtService.generateToken(jwtService.extractUserName(refreshToken)),jwtService.generateRefreshToken(jwtService.extractUserName(refreshToken)));
     }
 }
