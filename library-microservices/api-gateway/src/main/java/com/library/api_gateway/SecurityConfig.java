@@ -20,7 +20,7 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) throws Exception {
         JWTFilter jwtFilter = new JWTFilter(jwtService);
-        http.csrf(csrf -> csrf.disable()).authorizeExchange(exchanges -> exchanges.pathMatchers("/api/user/login","api/user/register","api/user/refresh").permitAll().anyExchange().authenticated()).securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
+        http.csrf(csrf -> csrf.disable()).authorizeExchange(exchanges -> exchanges.pathMatchers("/api/user/login","api/user/register","api/user/refresh").permitAll().anyExchange().permitAll()).securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable);

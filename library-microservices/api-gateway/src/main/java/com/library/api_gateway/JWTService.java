@@ -12,7 +12,11 @@ import java.util.Date;
 
 @Service
 public class JWTService {
-    private final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final Key KEY;
+    public JWTService() {
+        String secret = System.getenv("SECRET_KEY");
+        this.KEY = Keys.hmacShaKeyFor(secret.getBytes());
+    }
     public String extractUserName(String token){
         return Jwts.parserBuilder().setSigningKey(KEY).build().parseClaimsJws(token).getBody().getSubject();
 
