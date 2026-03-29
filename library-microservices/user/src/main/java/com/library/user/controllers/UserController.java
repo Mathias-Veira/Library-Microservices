@@ -34,7 +34,11 @@ public class UserController {
 
     @GetMapping("/{userId}")
     ResponseEntity<?> findUserById(@PathVariable int userId){
-        return new ResponseEntity<>(userService.getUserById(userId),HttpStatus.OK);
+        UserDTO userDTO = userService.getUserById(userId);
+        if(userDTO == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userDTO,HttpStatus.OK);
     }
 
     @GetMapping("/refresh")

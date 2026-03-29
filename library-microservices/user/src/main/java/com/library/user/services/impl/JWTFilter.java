@@ -7,7 +7,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
@@ -16,11 +19,9 @@ import java.util.List;
 
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTService jwtService;
-    private final HandlerExceptionResolver resolver;
 
-    public JWTFilter(JWTService jwtService, HandlerExceptionResolver resolver) {
+    public JWTFilter(JWTService jwtService) {
         this.jwtService = jwtService;
-        this.resolver = resolver;
     }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -29,12 +30,14 @@ public class JWTFilter extends OncePerRequestFilter {
             String token = header.substring(7);
             if (jwtService.isValid(token) && !jwtService.isRefreshtoken(token)) {
                 String username = jwtService.extractUserName(token);
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, List.of());
-
+                List<GrantedAuthority> authorities =
+                        List.of(new SimpleGrantedAuthority("ROLE_USER"));
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, token,authorities);
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             } else {
-                resolver.resolveException(request, response, null, new NotRefreshTokenException("Token no valid"));
-                return;
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("No valid Token");
 
             }
         }
