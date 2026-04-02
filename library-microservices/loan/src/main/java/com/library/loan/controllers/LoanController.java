@@ -28,4 +28,9 @@ public class LoanController {
         }
         return new ResponseEntity<>(loanDTO,HttpStatus.OK);
     }
+
+    @PostMapping("/return_book")
+    public ResponseEntity<?> saveLoan(@RequestParam int loanId){
+        return new ResponseEntity<>(loanService.returnBook(loanId),HttpStatus.OK);
+    }
 }

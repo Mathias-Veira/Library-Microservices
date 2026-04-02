@@ -13,9 +13,7 @@ import com.library.loan.services.UserClient;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 @Service
 public class LoanServiceImpl implements LoanService {
@@ -60,5 +58,12 @@ public class LoanServiceImpl implements LoanService {
         }
 
         return LoanMapper.changeToDTO(loanRepository.save(new Loan(0,bookId,userId, LocalDate.now(),LocalDate.now().plusMonths(1),null)));
+    }
+
+    @Override
+    public LoanDTO returnBook(int loanId) {
+        Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new IdNotFoundException("The loan does not exist"));
+        loan.setLoanReturnDate(LocalDate.now());
+        return LoanMapper.changeToDTO(loanRepository.save(loan));
     }
 }
