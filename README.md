@@ -22,8 +22,8 @@ Communication between services uses OpenFeign.
 # Current Features
 - User registration and login with password hashing using BCrypt.
 - JWT (JSON Web Tokens) based authentication with access and refresh token accross all microservices.
-- Add, and list books by id, by book name, by author name and by availabilty.
-- Borrow books.
+- Add, and list books by id, by book name and by author name.
+- Borrow and return books.
 - Track borrowed books by a user.
 # Future Features
 - Asynchronous communication between services using Kafka.
