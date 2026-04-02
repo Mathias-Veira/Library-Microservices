@@ -14,5 +14,5 @@ public class BookDTO {
     private String bookAuthor;
     private int bookPages;
     private String bookSynopsis;
-    private boolean available;
+    private int stock;
 }

@@ -1,5 +1,7 @@
 package com.library.loan.controllers;
 
+import com.library.loan.dtos.ErrorDTO;
+import com.library.loan.dtos.LoanDTO;
 import com.library.loan.services.LoanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,10 @@ public class LoanController {
 
     @PostMapping("/save_loan")
     public ResponseEntity<?> saveLoan(@RequestParam int userId, int bookId){
-        return new ResponseEntity<>(loanService.saveLoan(userId, bookId),HttpStatus.OK);
+        LoanDTO loanDTO = loanService.saveLoan(userId, bookId);
+        if(loanDTO == null){
+            return new ResponseEntity<>(new ErrorDTO(HttpStatus.BAD_REQUEST,"No stock for this book, loan cancelled"),HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(loanDTO,HttpStatus.OK);
     }
 }

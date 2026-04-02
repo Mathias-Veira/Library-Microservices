@@ -14,10 +14,6 @@ public class BookServiceImpl implements BookService {
     public BookServiceImpl(BookRepository bookRepository){
         this.bookRepository = bookRepository;
     }
-    @Override
-    public List<BookDTO> findBooksAvailable() {
-        return BookMapper.changeToListDTO(bookRepository.findBooksAvailable());
-    }
 
     @Override
     public List<BookDTO> findAllBooks() {

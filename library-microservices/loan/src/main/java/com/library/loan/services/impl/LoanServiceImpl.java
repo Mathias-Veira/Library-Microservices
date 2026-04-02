@@ -50,9 +50,15 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public LoanDTO saveLoan(int userId, int bookId) {
-        if(userClient.findUserById(userId) == null || bookClient.getBooksById(new ArrayList<>(List.of(bookId))).isEmpty()){
+        List<BookDTO> bookDTOList = bookClient.getBooksById(new ArrayList<>(List.of(bookId)));
+        if(userClient.findUserById(userId) == null || bookDTOList.isEmpty()){
             throw new IdNotFoundException("The user or the book does not exist");
         }
+        BookDTO bookDTO = bookDTOList.get(0);
+        if(bookDTO.getStock() <= 0){
+            return null;
+        }
+
         return LoanMapper.changeToDTO(loanRepository.save(new Loan(0,bookId,userId, LocalDate.now(),LocalDate.now().plusMonths(1),null)));
     }
 }

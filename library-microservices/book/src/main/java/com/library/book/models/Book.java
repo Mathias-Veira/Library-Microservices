@@ -25,5 +25,5 @@ public class Book  implements Serializable {
     private int bookPages;
     @Column(name = "book_synopsis")
     private String bookSynopsis;
-    private boolean available;
+    private int stock;
 }

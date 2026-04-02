@@ -8,10 +8,10 @@ import java.util.List;
 
 public class BookMapper {
     public static BookDTO changeToDTO(Book book){
-        return new BookDTO(book.getBookId(), book.getBookName(), book.getBookAuthor(), book.getBookPages(), book.getBookSynopsis(), book.isAvailable());
+        return new BookDTO(book.getBookId(), book.getBookName(), book.getBookAuthor(), book.getBookPages(), book.getBookSynopsis(), book.getStock());
     }
     public static Book changeToEntity(BookDTO book){
-        return new Book(book.getBookId(), book.getBookName(), book.getBookAuthor(), book.getBookPages(), book.getBookSynopsis(), book.isAvailable());
+        return new Book(book.getBookId(), book.getBookName(), book.getBookAuthor(), book.getBookPages(), book.getBookSynopsis(), book.getStock());
     }
     public static List<BookDTO> changeToListDTO(List<Book> books){
         List<BookDTO> bookDTOList = new ArrayList<>();

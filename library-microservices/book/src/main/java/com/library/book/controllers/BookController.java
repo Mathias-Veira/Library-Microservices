@@ -17,11 +17,6 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    @GetMapping("/available")
-    public ResponseEntity<List<BookDTO>> findBooksAvailable(){
-        return new ResponseEntity<List<BookDTO>>(bookService.findBooksAvailable(), HttpStatus.OK);
-    }
-
     @GetMapping("/all")
     public ResponseEntity<List<BookDTO>> findAllBooks(){
         return new ResponseEntity<List<BookDTO>>(bookService.findAllBooks(), HttpStatus.OK);
