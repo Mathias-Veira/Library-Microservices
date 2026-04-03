@@ -23,6 +23,7 @@
 		<module>user</module>
 		<module>book</module>
 		<module>loan</module>
+		<module>reservation</module>
 	</modules>
 	<dependencies>
 		<dependency>
