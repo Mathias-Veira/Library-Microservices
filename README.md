@@ -18,6 +18,7 @@ the eureka server itself and the config server.
 - user-service: Manages user registrations and authentication.
 - book-service: Manages book information.
 - loan-service: Manages borrowing books.
+- reservation-service: Manages reservations.
 Communication between services uses OpenFeign.
 # Current Features
 - User registration and login with password hashing using BCrypt.
