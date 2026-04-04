@@ -1,6 +1,7 @@
 package com.library.loan.services.impl;
 
 import com.library.loan.dtos.BookDTO;
+import com.library.loan.dtos.BookOutOfStockEventDTO;
 import com.library.loan.dtos.LoanBookDTO;
 import com.library.loan.dtos.LoanDTO;
 import com.library.loan.error.IdNotFoundException;
@@ -10,6 +11,7 @@ import com.library.loan.repositories.LoanRepository;
 import com.library.loan.services.BookClient;
 import com.library.loan.services.LoanService;
 import com.library.loan.services.UserClient;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,10 +22,12 @@ public class LoanServiceImpl implements LoanService {
     private final LoanRepository loanRepository;
     private final BookClient bookClient;
     private final UserClient userClient;
-    public LoanServiceImpl(LoanRepository loanRepository,BookClient bookClient, UserClient userClient){
+    private final KafkaTemplate<String, BookOutOfStockEventDTO> kafkaTemplate;
+    public LoanServiceImpl(LoanRepository loanRepository,BookClient bookClient, UserClient userClient,KafkaTemplate<String,BookOutOfStockEventDTO> kafkaTemplate){
         this.loanRepository = loanRepository;
         this.bookClient = bookClient;
         this.userClient = userClient;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
@@ -54,6 +58,7 @@ public class LoanServiceImpl implements LoanService {
         }
         BookDTO bookDTO = bookDTOList.get(0);
         if(bookDTO.getStock() <= 0){
+            kafkaTemplate.send("book_out_of_stock",new BookOutOfStockEventDTO(userId,bookId));
             return null;
         }
 
