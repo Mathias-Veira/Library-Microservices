@@ -9,7 +9,8 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "com.library.reservation.dtos"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.library.reservation.dtos.BookOutOfStockEventDTO
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
