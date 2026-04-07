@@ -1,6 +1,7 @@
 package com.library.book.services;
 
 import com.library.book.dtos.BookDTO;
+import com.library.book.dtos.BookOutOfStockEventDTO;
 
 import java.util.List;
 
@@ -10,4 +11,5 @@ public interface BookService {
     List<BookDTO> findBooksByName(String bookName);
     List<BookDTO> findBooksByAuthor(String bookAuthor);
     List<BookDTO> findBookById(List<Integer> bookId);
+    BookDTO addBookStock(BookOutOfStockEventDTO bookOutOfStockEventDTO);
 }
