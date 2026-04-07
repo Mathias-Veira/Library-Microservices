@@ -69,6 +69,7 @@ public class LoanServiceImpl implements LoanService {
     public LoanDTO returnBook(int loanId) {
         Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new IdNotFoundException("The loan does not exist"));
         loan.setLoanReturnDate(LocalDate.now());
+        kafkaTemplate.send("book_returned", new BookOutOfStockEventDTO(loan.getUserId(),loan.getBookId()));
         return LoanMapper.changeToDTO(loanRepository.save(loan));
     }
 }
