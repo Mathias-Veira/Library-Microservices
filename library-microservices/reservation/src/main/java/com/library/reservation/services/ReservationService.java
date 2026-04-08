@@ -4,4 +4,5 @@ import com.library.reservation.dtos.BookOutOfStockEventDTO;
 
 public interface ReservationService {
     void saveReservation(BookOutOfStockEventDTO bookOutOfStockEventDTO);
+    void checkBookInReservations(BookOutOfStockEventDTO bookOutOfStockEventDTO);
 }
