@@ -2,12 +2,14 @@ package com.library.loan.dtos;
 
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 
 @Data
+@NoArgsConstructor
 public class BookOutOfStockEventDTO {
     private String eventId;
     private int userId;
