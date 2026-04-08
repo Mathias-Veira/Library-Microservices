@@ -68,7 +68,7 @@ public class LoanServiceImpl implements LoanService {
         return LoanMapper.changeToDTO(loanRepository.save(new Loan(0, bookId, userId, LocalDate.now(), LocalDate.now().plusMonths(1), null)));
     }
 
-    @KafkaListener(topics = "reservation_ready", groupId = "library")
+    @KafkaListener(topics = "reservation_ready", groupId = "loan")
     @Override
     public void saveLoanFromReservationEvent(BookOutOfStockEventDTO bookOutOfStockEventDTO) {
         loanRepository.save(new Loan(0, bookOutOfStockEventDTO.getBookId(), bookOutOfStockEventDTO.getUserId(), LocalDate.now(), LocalDate.now().plusMonths(1), null));

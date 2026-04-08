@@ -37,7 +37,7 @@ public class BookServiceImpl implements BookService {
     public List<BookDTO> findBookById(List<Integer> bookId) {
         return BookMapper.changeToListDTO(bookRepository.findBooksById(bookId));
     }
-    @KafkaListener(topics = "book_returned", groupId = "library")
+    @KafkaListener(topics = "book_returned", groupId = "book")
     @Override
     public BookDTO addBookStock(BookOutOfStockEventDTO bookOutOfStockEventDTO) {
         Optional<Book> bookOptional = bookRepository.findById(bookOutOfStockEventDTO.getBookId());

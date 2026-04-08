@@ -21,20 +21,17 @@ public class ReservationServiceImpl implements ReservationService {
         this.reservationRepository = reservationRepository;
         this.kafkaTemplate = kafkaTemplate;
     }
-    @KafkaListener(topics = "book_out_of_stock", groupId = "library")
+    @KafkaListener(topics = "book_out_of_stock", groupId = "reservation")
     @Override
     public void saveReservation(BookOutOfStockEventDTO bookOutOfStockEventDTO) {
         reservationRepository.save(ReservationMapper.changeToEntity(new ReservationDTO(0, bookOutOfStockEventDTO.getBookId(), bookOutOfStockEventDTO.getUserId(), LocalDate.now())));
     }
-    @KafkaListener(topics = "book_returned", groupId = "library")
+    @KafkaListener(topics = "book_returned", groupId = "reservation")
     @Override
     public void checkBookInReservations(BookOutOfStockEventDTO bookOutOfStockEventDTO) {
-        Reservation reservation;
         Optional<Reservation> reservationOptional = reservationRepository.findReservationByBookId(bookOutOfStockEventDTO.getBookId());
         if(reservationOptional.isPresent()){
-            reservation = reservationOptional.get();
-            kafkaTemplate.send("reservation_ready",new BookOutOfStockEventDTO(reservation.getUserId(), reservation.getBookId()));
+            kafkaTemplate.send("reservation_ready",new BookOutOfStockEventDTO(reservationOptional.get().getUserId(), bookOutOfStockEventDTO.getBookId()));
         }
-
     }
 }
