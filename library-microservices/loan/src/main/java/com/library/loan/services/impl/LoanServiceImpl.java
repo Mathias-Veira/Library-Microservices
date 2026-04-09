@@ -4,6 +4,7 @@ import com.library.loan.dtos.BookDTO;
 import com.library.loan.dtos.BookOutOfStockEventDTO;
 import com.library.loan.dtos.LoanBookDTO;
 import com.library.loan.dtos.LoanDTO;
+import com.library.loan.error.ActiveLoanException;
 import com.library.loan.error.IdNotFoundException;
 import com.library.loan.mappers.LoanMapper;
 import com.library.loan.models.Loan;
@@ -64,6 +65,10 @@ public class LoanServiceImpl implements LoanService {
             kafkaTemplate.send("book_out_of_stock", new BookOutOfStockEventDTO(userId, bookId));
             return null;
         }
+        Optional<Loan> loanOptional = loanRepository.findActiveLoan(userId,bookId);
+        if(loanOptional.isPresent()){
+            throw new ActiveLoanException("Loan already exists for this user and book");
+        }
         kafkaTemplate.send("loan_created", new BookOutOfStockEventDTO(userId,bookId));
 
         return LoanMapper.changeToDTO(loanRepository.save(new Loan(0, bookId, userId, LocalDate.now(), LocalDate.now().plusMonths(1), null)));
@@ -72,6 +77,10 @@ public class LoanServiceImpl implements LoanService {
     @KafkaListener(topics = "reservation_ready", groupId = "loan")
     @Override
     public void saveLoanFromReservationEvent(BookOutOfStockEventDTO bookOutOfStockEventDTO) {
+        Optional<Loan> loanOptional = loanRepository.findActiveLoan(bookOutOfStockEventDTO.getUserId(), bookOutOfStockEventDTO.getBookId());
+        if(loanOptional.isPresent()){
+            throw new ActiveLoanException("Loan already exists for this user and book");
+        }
         loanRepository.save(new Loan(0, bookOutOfStockEventDTO.getBookId(), bookOutOfStockEventDTO.getUserId(), LocalDate.now(), LocalDate.now().plusMonths(1), null));
     }
 

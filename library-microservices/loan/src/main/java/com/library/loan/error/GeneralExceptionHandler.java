@@ -29,4 +29,10 @@ public class GeneralExceptionHandler {
         ErrorDTO error = new ErrorDTO(HttpStatus.NOT_FOUND,"User or Book not found");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+    @ExceptionHandler(ActiveLoanException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDTO> ActiveLoanException(ActiveLoanException exception){
+        ErrorDTO error = new ErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }
