@@ -26,7 +26,7 @@ the eureka server itself and the config server.
 ## Use case using Kafka
 ### 1 - Loan creation
  - Loan service attempts to create a loan.
- - It checks wether the book is in stock.
+ - It checks whether the book is in stock.
  - If book does not have stock available, loan service publishes event `book_out_of_stock`.
  - If it does, loan service publishes event `loan_created`.
 ### 2 - Handling event `loan_created`
