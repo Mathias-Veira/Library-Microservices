@@ -23,6 +23,24 @@ the eureka server itself and the config server.
 - **loan-service**: Manages borrowing books.
 - **reservation-service**: Manages reservations.
 
+## Use case using Kafka
+### 1 - Loan creation
+ - Loan service attempts to create a loan.
+ - It checks wether the book is in stock.
+ - If book does not have stock available, loan service publishes event `book_out_of_stock`.
+ - If it does, loan service publishes event `loan_created`.
+### 2 - Handling event `loan_created`
+ - Book service consumes the event and decreases book stock by one.
+### 3 - Handling event `book_out_of_stock`
+ - Reservation service consumes the event and stores the reservation in database.
+### 4 - Book returned
+ - When a book is returned, loan service publishes event `book_returned`.
+ - Book service consumes the event and increases book stock by one.
+ - Reservation service also consumes the event and checks if there is a pending reservation.
+ - If so, Reservation service publishes event `reservation_ready`.
+### 5 - Handling event `reservation_ready`
+ - Loan service consumes the event and creates a new loan.
+
 ## Current Features
 - User registration and login with password hashing using BCrypt.
 - JWT (JSON Web Tokens) based authentication with access and refresh token across all microservices.
