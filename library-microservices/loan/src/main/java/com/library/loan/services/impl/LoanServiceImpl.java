@@ -64,6 +64,7 @@ public class LoanServiceImpl implements LoanService {
             kafkaTemplate.send("book_out_of_stock", new BookOutOfStockEventDTO(userId, bookId));
             return null;
         }
+        kafkaTemplate.send("loan_created", new BookOutOfStockEventDTO(userId,bookId));
 
         return LoanMapper.changeToDTO(loanRepository.save(new Loan(0, bookId, userId, LocalDate.now(), LocalDate.now().plusMonths(1), null)));
     }
