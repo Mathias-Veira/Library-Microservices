@@ -49,4 +49,15 @@ public class BookServiceImpl implements BookService {
         book.setStock(book.getStock()+1);
         return BookMapper.changeToDTO(bookRepository.save(book));
     }
+    @KafkaListener(topics = "loan_created", groupId = "book")
+    @Override
+    public void removeBookStock(BookOutOfStockEventDTO bookOutOfStockEventDTO) {
+        Optional<Book> bookOptional = bookRepository.findById(bookOutOfStockEventDTO.getBookId());
+        Book book;
+        if(bookOptional.isPresent()){
+            book = bookOptional.get();
+            book.setStock(book.getStock()-1);
+            bookRepository.save(book);
+        }
+    }
 }

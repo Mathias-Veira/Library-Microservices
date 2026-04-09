@@ -12,4 +12,5 @@ public interface BookService {
     List<BookDTO> findBooksByAuthor(String bookAuthor);
     List<BookDTO> findBookById(List<Integer> bookId);
     BookDTO addBookStock(BookOutOfStockEventDTO bookOutOfStockEventDTO);
+    void removeBookStock(BookOutOfStockEventDTO bookOutOfStockEventDTO);
 }
