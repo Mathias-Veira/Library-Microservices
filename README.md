@@ -5,6 +5,7 @@ Future updates will expand its features. These future updates will be explained 
 ## Technologies Used
 - Java 17
 - Spring Boot 3.4.4
+- JUnit and Mockito for unit testing
 - Spring Cloud (Eureka, Config, Gateway)
 - JWT (JSON Web Tokens)
 - JPA
@@ -48,10 +49,9 @@ the eureka server itself and the config server.
 - Borrow and return books.
 - Track borrowed books by a user.
 - Creating events using Apache Kafka (example: `book_out_of_stock`).
-
-## Future Features
-- Consume events using Apache Kafka.
 - Add testing using JUnit and Mockito.
+
+
 
 
 
