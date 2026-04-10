@@ -10,7 +10,7 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.use.type.headers: false
-        spring.json.value.default.type: com.library.loan.dtos.BookOutOfStockEventDTO
+        spring.json.value.default.type: com.library.loan.dtos.BookEventDTO
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer

@@ -1,8 +1,8 @@
 package com.library.reservation.services;
 
-import com.library.reservation.dtos.BookOutOfStockEventDTO;
+import com.library.reservation.dtos.BookEventDTO;
 
 public interface ReservationService {
-    void saveReservation(BookOutOfStockEventDTO bookOutOfStockEventDTO);
-    void checkBookInReservations(BookOutOfStockEventDTO bookOutOfStockEventDTO);
+    void saveReservation(BookEventDTO bookEventDTO);
+    void checkBookInReservations(BookEventDTO bookEventDTO);
 }

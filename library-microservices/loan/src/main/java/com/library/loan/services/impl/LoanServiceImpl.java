@@ -1,7 +1,7 @@
 package com.library.loan.services.impl;
 
 import com.library.loan.dtos.BookDTO;
-import com.library.loan.dtos.BookOutOfStockEventDTO;
+import com.library.loan.dtos.BookEventDTO;
 import com.library.loan.dtos.LoanBookDTO;
 import com.library.loan.dtos.LoanDTO;
 import com.library.loan.error.ActiveLoanException;
@@ -25,9 +25,9 @@ public class LoanServiceImpl implements LoanService {
     private final LoanRepository loanRepository;
     private final BookClient bookClient;
     private final UserClient userClient;
-    private final KafkaTemplate<String, BookOutOfStockEventDTO> kafkaTemplate;
+    private final KafkaTemplate<String, BookEventDTO> kafkaTemplate;
 
-    public LoanServiceImpl(LoanRepository loanRepository, BookClient bookClient, UserClient userClient, KafkaTemplate<String, BookOutOfStockEventDTO> kafkaTemplate) {
+    public LoanServiceImpl(LoanRepository loanRepository, BookClient bookClient, UserClient userClient, KafkaTemplate<String, BookEventDTO> kafkaTemplate) {
         this.loanRepository = loanRepository;
         this.bookClient = bookClient;
         this.userClient = userClient;
@@ -62,33 +62,33 @@ public class LoanServiceImpl implements LoanService {
         }
         BookDTO bookDTO = bookDTOList.get(0);
         if (bookDTO.getStock() <= 0) {
-            kafkaTemplate.send("book_out_of_stock", new BookOutOfStockEventDTO(userId, bookId));
+            kafkaTemplate.send("book_out_of_stock", new BookEventDTO(userId, bookId));
             return null;
         }
         Optional<Loan> loanOptional = loanRepository.findActiveLoan(userId,bookId);
         if(loanOptional.isPresent()){
             throw new ActiveLoanException("Loan already exists for this user and book");
         }
-        kafkaTemplate.send("loan_created", new BookOutOfStockEventDTO(userId,bookId));
+        kafkaTemplate.send("loan_created", new BookEventDTO(userId,bookId));
 
         return LoanMapper.changeToDTO(loanRepository.save(new Loan(0, bookId, userId, LocalDate.now(), LocalDate.now().plusMonths(1), null)));
     }
 
     @KafkaListener(topics = "reservation_ready", groupId = "loan")
     @Override
-    public void saveLoanFromReservationEvent(BookOutOfStockEventDTO bookOutOfStockEventDTO) {
-        Optional<Loan> loanOptional = loanRepository.findActiveLoan(bookOutOfStockEventDTO.getUserId(), bookOutOfStockEventDTO.getBookId());
+    public void saveLoanFromReservationEvent(BookEventDTO bookEventDTO) {
+        Optional<Loan> loanOptional = loanRepository.findActiveLoan(bookEventDTO.getUserId(), bookEventDTO.getBookId());
         if(loanOptional.isPresent()){
             throw new ActiveLoanException("Loan already exists for this user and book");
         }
-        loanRepository.save(new Loan(0, bookOutOfStockEventDTO.getBookId(), bookOutOfStockEventDTO.getUserId(), LocalDate.now(), LocalDate.now().plusMonths(1), null));
+        loanRepository.save(new Loan(0, bookEventDTO.getBookId(), bookEventDTO.getUserId(), LocalDate.now(), LocalDate.now().plusMonths(1), null));
     }
 
     @Override
     public LoanDTO returnBook(int loanId) {
         Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new IdNotFoundException("The loan does not exist"));
         loan.setLoanReturnDate(LocalDate.now());
-        kafkaTemplate.send("book_returned", new BookOutOfStockEventDTO(loan.getUserId(), loan.getBookId()));
+        kafkaTemplate.send("book_returned", new BookEventDTO(loan.getUserId(), loan.getBookId()));
         return LoanMapper.changeToDTO(loanRepository.save(loan));
     }
 }

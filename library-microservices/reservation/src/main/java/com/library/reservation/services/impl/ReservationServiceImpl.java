@@ -1,6 +1,6 @@
 package com.library.reservation.services.impl;
 
-import com.library.reservation.dtos.BookOutOfStockEventDTO;
+import com.library.reservation.dtos.BookEventDTO;
 import com.library.reservation.dtos.ReservationDTO;
 import com.library.reservation.mappers.ReservationMapper;
 import com.library.reservation.models.Reservation;
@@ -16,22 +16,22 @@ import java.util.Optional;
 @Service
 public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
-    private final KafkaTemplate<String, BookOutOfStockEventDTO> kafkaTemplate;
-    public ReservationServiceImpl(ReservationRepository reservationRepository,KafkaTemplate<String, BookOutOfStockEventDTO> kafkaTemplate){
+    private final KafkaTemplate<String, BookEventDTO> kafkaTemplate;
+    public ReservationServiceImpl(ReservationRepository reservationRepository,KafkaTemplate<String, BookEventDTO> kafkaTemplate){
         this.reservationRepository = reservationRepository;
         this.kafkaTemplate = kafkaTemplate;
     }
     @KafkaListener(topics = "book_out_of_stock", groupId = "reservation")
     @Override
-    public void saveReservation(BookOutOfStockEventDTO bookOutOfStockEventDTO) {
-        reservationRepository.save(ReservationMapper.changeToEntity(new ReservationDTO(0, bookOutOfStockEventDTO.getBookId(), bookOutOfStockEventDTO.getUserId(), LocalDate.now())));
+    public void saveReservation(BookEventDTO bookEventDTO) {
+        reservationRepository.save(ReservationMapper.changeToEntity(new ReservationDTO(0, bookEventDTO.getBookId(), bookEventDTO.getUserId(), LocalDate.now())));
     }
     @KafkaListener(topics = "book_returned", groupId = "reservation")
     @Override
-    public void checkBookInReservations(BookOutOfStockEventDTO bookOutOfStockEventDTO) {
-        Optional<Reservation> reservationOptional = reservationRepository.findReservationByBookId(bookOutOfStockEventDTO.getBookId());
+    public void checkBookInReservations(BookEventDTO bookEventDTO) {
+        Optional<Reservation> reservationOptional = reservationRepository.findReservationByBookId(bookEventDTO.getBookId());
         if(reservationOptional.isPresent()){
-            kafkaTemplate.send("reservation_ready",new BookOutOfStockEventDTO(reservationOptional.get().getUserId(), bookOutOfStockEventDTO.getBookId()));
+            kafkaTemplate.send("reservation_ready",new BookEventDTO(reservationOptional.get().getUserId(), bookEventDTO.getBookId()));
         }
     }
 }

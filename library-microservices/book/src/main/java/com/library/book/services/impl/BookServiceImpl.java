@@ -1,7 +1,7 @@
 package com.library.book.services.impl;
 import com.library.book.models.Book;
 import com.library.book.dtos.BookDTO;
-import com.library.book.dtos.BookOutOfStockEventDTO;
+import com.library.book.dtos.BookEventDTO;
 import com.library.book.mappers.BookMapper;
 import com.library.book.repositories.BookRepository;
 import com.library.book.services.BookService;
@@ -39,8 +39,8 @@ public class BookServiceImpl implements BookService {
     }
     @KafkaListener(topics = "book_returned", groupId = "book")
     @Override
-    public BookDTO addBookStock(BookOutOfStockEventDTO bookOutOfStockEventDTO) {
-        Optional<Book> bookOptional = bookRepository.findById(bookOutOfStockEventDTO.getBookId());
+    public BookDTO addBookStock(BookEventDTO bookEventDTO) {
+        Optional<Book> bookOptional = bookRepository.findById(bookEventDTO.getBookId());
         Book book;
         if(bookOptional.isEmpty()){
             return null;
@@ -51,8 +51,8 @@ public class BookServiceImpl implements BookService {
     }
     @KafkaListener(topics = "loan_created", groupId = "book")
     @Override
-    public void removeBookStock(BookOutOfStockEventDTO bookOutOfStockEventDTO) {
-        Optional<Book> bookOptional = bookRepository.findById(bookOutOfStockEventDTO.getBookId());
+    public void removeBookStock(BookEventDTO bookEventDTO) {
+        Optional<Book> bookOptional = bookRepository.findById(bookEventDTO.getBookId());
         Book book;
         if(bookOptional.isPresent()){
             book = bookOptional.get();
