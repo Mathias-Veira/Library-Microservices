@@ -1,6 +1,7 @@
 package com.library.loan;
 
 import com.library.loan.dtos.BookDTO;
+import com.library.loan.dtos.BookEventDTO;
 import com.library.loan.dtos.LoanDTO;
 import com.library.loan.dtos.UserDTO;
 import com.library.loan.error.ActiveLoanException;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,6 +34,8 @@ public class LoanServiceTest {
     private BookClient bookClient;
     @Mock
     private UserClient userClient;
+    @Mock
+    private KafkaTemplate<String, BookEventDTO> kafkaTemplate;
     @InjectMocks
     private LoanServiceImpl loanService;
 
@@ -44,6 +48,22 @@ public class LoanServiceTest {
         when(userClient.findUserById(2)).thenReturn(new UserDTO(2,"userTest","123456","test@gmail.com"));
         when(loanRepository.findActiveLoan(2, 1)).thenReturn(Optional.of(loan));
         assertThrows(ActiveLoanException.class,() ->{ loanService.saveLoan(2,1);});
+    }
+
+    @Test
+    public void shouldCreateNewLoan(){
+        int userId = 2;
+        int bookId = 1;
+        BookDTO bookDTO = new BookDTO(bookId,"book test","me",10);
+        UserDTO userDTO = new UserDTO(userId,"userTest","123456","test@gmail.com");
+        Loan loan = new Loan(1,bookId,userId, LocalDate.now(),LocalDate.now().plusMonths(1),LocalDate.now());
+        when(bookClient.getBooksById(anyList())).thenReturn(List.of(bookDTO));
+        when(userClient.findUserById(userId)).thenReturn(userDTO);
+        when(loanRepository.findActiveLoan(userId, bookId)).thenReturn(Optional.empty());
+        when(loanRepository.save(any(Loan.class))).thenReturn(loan);
+        LoanDTO loanDTO = loanService.saveLoan(userId, bookId);
+        verify(kafkaTemplate).send(eq("loan_created"),any(BookEventDTO.class));
+        assertEquals(loan.getLoanId(),loanDTO.getLoanId());
     }
 
 }
