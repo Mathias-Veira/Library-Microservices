@@ -66,4 +66,18 @@ public class LoanServiceTest {
         assertEquals(loan.getLoanId(),loanDTO.getLoanId());
     }
 
+    @Test
+    public void shouldPublishBookOutOfStockEvent(){
+        int userId = 2;
+        int bookId = 1;
+        BookDTO bookDTO = new BookDTO(bookId,"book test","me",0);
+        UserDTO userDTO = new UserDTO(userId,"userTest","123456","test@gmail.com");
+        when(bookClient.getBooksById(anyList())).thenReturn(List.of(bookDTO));
+        when(userClient.findUserById(userId)).thenReturn(userDTO);
+        LoanDTO loanDTO = loanService.saveLoan(userId,bookId);
+        verify(kafkaTemplate).send(eq("book_out_of_stock"),any(BookEventDTO.class));
+        verify(loanRepository, never()).save(any());
+        assertNull(loanDTO);
+    }
+
 }
