@@ -5,6 +5,7 @@ import com.library.loan.dtos.BookEventDTO;
 import com.library.loan.dtos.LoanDTO;
 import com.library.loan.dtos.UserDTO;
 import com.library.loan.error.ActiveLoanException;
+import com.library.loan.error.IdNotFoundException;
 import com.library.loan.mappers.LoanMapper;
 import com.library.loan.models.Loan;
 import com.library.loan.repositories.LoanRepository;
@@ -78,6 +79,26 @@ public class LoanServiceTest {
         verify(kafkaTemplate).send(eq("book_out_of_stock"),any(BookEventDTO.class));
         verify(loanRepository, never()).save(any());
         assertNull(loanDTO);
+    }
+
+    @Test
+    public void shouldThrowIdNotFoundException(){
+        int loanId = 99;
+        assertThrows(IdNotFoundException.class,() ->{ loanService.returnBook(loanId);});
+    }
+
+    @Test
+    public void shouldReturnBookReturned(){
+        int loanId = 1;
+        int bookId = 1;
+        int userId = 2;
+        Loan loan = new Loan(loanId,bookId,userId, LocalDate.now(),LocalDate.now().plusMonths(1),null);
+        when(loanRepository.findById(loanId)).thenReturn(Optional.of(loan));
+        when(loanRepository.save(any(Loan.class))).thenReturn(loan);
+        LoanDTO loanDTO = loanService.returnBook(loanId);
+        assertNotNull(loanDTO.getLoanReturnDate());
+        assertEquals(LocalDate.now(),loanDTO.getLoanReturnDate());
+        verify(kafkaTemplate).send(eq("book_returned"),any(BookEventDTO.class));
     }
 
 }
