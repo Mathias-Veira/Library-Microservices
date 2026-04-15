@@ -6,7 +6,6 @@ import com.library.loan.dtos.LoanDTO;
 import com.library.loan.dtos.UserDTO;
 import com.library.loan.error.ActiveLoanException;
 import com.library.loan.error.IdNotFoundException;
-import com.library.loan.mappers.LoanMapper;
 import com.library.loan.models.Loan;
 import com.library.loan.repositories.LoanRepository;
 import com.library.loan.services.BookClient;
