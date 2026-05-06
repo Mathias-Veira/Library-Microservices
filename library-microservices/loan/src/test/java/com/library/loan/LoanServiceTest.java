@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class LoanServiceTest {
+ class LoanServiceTest {
     @Mock
     private LoanRepository loanRepository;
     @Mock
@@ -40,7 +40,7 @@ public class LoanServiceTest {
     private LoanServiceImpl loanService;
 
     @Test
-    public void shouldThrowActiveLoanException(){
+     void shouldThrowActiveLoanException(){
         List<BookDTO> bookDTOList = new ArrayList<>();
         bookDTOList.add(new BookDTO(1,"book test","me",10));
         Loan loan = new Loan(1,1,2, LocalDate.now(),LocalDate.now().plusMonths(1),LocalDate.now());
@@ -51,7 +51,7 @@ public class LoanServiceTest {
     }
 
     @Test
-    public void shouldCreateNewLoan(){
+     void shouldCreateNewLoan(){
         int userId = 2;
         int bookId = 1;
         BookDTO bookDTO = new BookDTO(bookId,"book test","me",10);
@@ -67,7 +67,7 @@ public class LoanServiceTest {
     }
 
     @Test
-    public void shouldPublishBookOutOfStockEvent(){
+     void shouldPublishBookOutOfStockEvent(){
         int userId = 2;
         int bookId = 1;
         BookDTO bookDTO = new BookDTO(bookId,"book test","me",0);
@@ -81,13 +81,13 @@ public class LoanServiceTest {
     }
 
     @Test
-    public void shouldThrowIdNotFoundException(){
+     void shouldThrowIdNotFoundException(){
         int loanId = 99;
         assertThrows(IdNotFoundException.class,() ->{ loanService.returnBook(loanId);});
     }
 
     @Test
-    public void shouldReturnBookReturned(){
+     void shouldReturnBookReturned(){
         int loanId = 1;
         int bookId = 1;
         int userId = 2;

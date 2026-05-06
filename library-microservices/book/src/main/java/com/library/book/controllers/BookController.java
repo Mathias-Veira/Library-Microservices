@@ -19,19 +19,19 @@ public class BookController {
 
     @GetMapping("/all")
     public ResponseEntity<List<BookDTO>> findAllBooks(){
-        return new ResponseEntity<List<BookDTO>>(bookService.findAllBooks(), HttpStatus.OK);
+        return new ResponseEntity<>(bookService.findAllBooks(), HttpStatus.OK);
     }
 
     @GetMapping("/book_by_name")
     public ResponseEntity<List<BookDTO>> findBooksByName(@RequestParam String bookName){
-        return new ResponseEntity<List<BookDTO>>(bookService.findBooksByName(bookName), HttpStatus.OK);
+        return new ResponseEntity<>(bookService.findBooksByName(bookName), HttpStatus.OK);
     }
     @GetMapping("/book_by_author")
     public ResponseEntity<List<BookDTO>> findBooksByAuthor(@RequestParam String bookAuthor){
-        return new ResponseEntity<List<BookDTO>>(bookService.findBooksByAuthor(bookAuthor), HttpStatus.OK);
+        return new ResponseEntity<>(bookService.findBooksByAuthor(bookAuthor), HttpStatus.OK);
     }
     @GetMapping("/book_by_id")
     public ResponseEntity<List<BookDTO>> findBookById(@RequestParam List<Integer> id){
-        return new ResponseEntity<List<BookDTO>>(bookService.findBookById(id), HttpStatus.OK);
+        return new ResponseEntity<>(bookService.findBookById(id), HttpStatus.OK);
     }
 }

@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LoanMapper {
+    private LoanMapper(){
+
+    }
     public static LoanDTO changeToDTO(Loan loan){
         return new LoanDTO(loan.getLoanId(), loan.getBookId(), loan.getUserId(),loan.getLoanDate(),loan.getLoanExpirationDate(),loan.getLoanReturnDate());
     }

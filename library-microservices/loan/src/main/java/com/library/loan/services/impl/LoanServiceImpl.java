@@ -42,7 +42,7 @@ public class LoanServiceImpl implements LoanService {
         //stores all the loans from a user
         List<LoanDTO> loanDTOList = LoanMapper.changeToListDTO(loanRepository.findLoansByUserId(userId));
         //stores books ids from the loans
-        List<Integer> booksIds = loanDTOList.stream().map(LoanDTO::getBookId).distinct().collect(Collectors.toList());
+        List<Integer> booksIds = loanDTOList.stream().map(LoanDTO::getBookId).distinct().toList();
         //stores book info
         List<BookDTO> bookDTOList = bookClient.getBooksById(booksIds);
         //store book info in a map

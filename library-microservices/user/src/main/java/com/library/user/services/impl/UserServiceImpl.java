@@ -8,10 +8,9 @@ import com.library.user.models.User;
 import com.library.user.repositories.UserRepository;
 import com.library.user.services.UserService;
 import io.micrometer.common.util.StringUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.Optional;
 

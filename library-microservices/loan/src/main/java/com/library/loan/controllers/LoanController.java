@@ -1,11 +1,14 @@
 package com.library.loan.controllers;
 
 import com.library.loan.dtos.ErrorDTO;
+import com.library.loan.dtos.LoanBookDTO;
 import com.library.loan.dtos.LoanDTO;
 import com.library.loan.services.LoanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -16,7 +19,7 @@ public class LoanController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getLoansByUserId(@PathVariable int userId){
+    public ResponseEntity<List<LoanBookDTO>> getLoansByUserId(@PathVariable int userId){
         return new ResponseEntity<>(loanService.getListLoansByUserId(userId), HttpStatus.OK);
     }
 
@@ -30,7 +33,7 @@ public class LoanController {
     }
 
     @PostMapping("/return_book")
-    public ResponseEntity<?> saveLoan(@RequestParam int loanId){
+    public ResponseEntity<LoanDTO> saveLoan(@RequestParam int loanId){
         return new ResponseEntity<>(loanService.returnBook(loanId),HttpStatus.OK);
     }
 }

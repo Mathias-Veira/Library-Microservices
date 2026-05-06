@@ -4,6 +4,9 @@ import com.library.user.dtos.UserDTO;
 import com.library.user.models.User;
 
 public class UserMapper {
+    private UserMapper(){
+
+    }
     public static UserDTO changeToDTO(User user){
         return new UserDTO(user.getUserId(),user.getUserName(), user.getUserPassword(), user.getUserEmail());
     }

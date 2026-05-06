@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookMapper {
+    private BookMapper(){
+
+    }
     public static BookDTO changeToDTO(Book book){
         return new BookDTO(book.getBookId(), book.getBookName(), book.getBookAuthor(), book.getBookPages(), book.getBookSynopsis(), book.getStock());
     }
