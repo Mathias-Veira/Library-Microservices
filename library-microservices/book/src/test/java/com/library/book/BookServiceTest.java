@@ -1,6 +1,8 @@
 package com.library.book;
 
 
+import com.library.book.dtos.BookDTO;
+import com.library.book.dtos.BookEventDTO;
 import com.library.book.models.Book;
 import com.library.book.repositories.BookRepository;
 import com.library.book.services.impl.BookServiceImpl;
@@ -12,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -32,6 +35,14 @@ class BookServiceTest {
         verify(bookRepository).findBooksByAuthor(author);
         assertEquals(1,books.size());
         assertEquals(author,books.get(0).getBookAuthor());
+    }
+    @Test
+    void shouldReturnAddedStock(){
+        Optional<Book> bookOptional = Optional.of(new Book(1,"The Way of Kings","Brandon Sanderson",1190,"",10));
+        when(bookRepository.findById(anyInt())).thenReturn(bookOptional);
+        when(bookRepository.save(any(Book.class))).thenReturn(bookOptional.get());
+        BookDTO bookDTO = bookService.addBookStock(new BookEventDTO(1,1));
+        assertEquals(bookDTO.getStock(),bookOptional.get().getStock());
     }
 
 }
