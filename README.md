@@ -1,11 +1,12 @@
 # Library-Microservices
 Library management system built with Spring Boot to demonstrate a microservice architecture and synchronous communication between services.
-Future updates will expand its features. These future updates will be explained later.
+All API requests are limited to 10 requests per minute per user to ensure system stability.
 
 ## Technologies Used
 - Java 17
 - Spring Boot 3.4.4
 - JUnit and Mockito for unit testing
+- Bucket4J to limit requests
 - Spring Cloud (Eureka, Config, Gateway)
 - JWT (JSON Web Tokens)
 - JPA
