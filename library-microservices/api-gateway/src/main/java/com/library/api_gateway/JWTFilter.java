@@ -16,9 +16,12 @@ import java.util.List;
 
 public class JWTFilter implements WebFilter {
     private final JWTService jwtService;
+    private final RateLimitService rateLimitService;
 
-    public JWTFilter(JWTService jwtService) {
+    public JWTFilter(JWTService jwtService,RateLimitService rateLimitService) {
         this.jwtService = jwtService;
+        this.rateLimitService = rateLimitService;
+
     }
 
     @Override
@@ -32,6 +35,10 @@ public class JWTFilter implements WebFilter {
             }
             List<GrantedAuthority> authorities =
                     List.of(new SimpleGrantedAuthority("ROLE_USER"));
+            if(!rateLimitService.allowRequest(jwtService.extractUserName(token))){
+                exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
+                return exchange.getResponse().setComplete();
+            }
             return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(new UsernamePasswordAuthenticationToken(jwtService.extractUserName(token),token,authorities)));
 
         }
