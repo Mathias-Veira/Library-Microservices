@@ -35,4 +35,10 @@ public class GeneralExceptionHandler {
         ErrorDTO error = new ErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+    @ExceptionHandler(MaxLoansException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDTO> MaxLoansException(MaxLoansException exception){
+        ErrorDTO error = new ErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }
