@@ -6,6 +6,7 @@ import com.library.loan.dtos.LoanDTO;
 import com.library.loan.dtos.UserDTO;
 import com.library.loan.error.ActiveLoanException;
 import com.library.loan.error.IdNotFoundException;
+import com.library.loan.error.MaxLoansException;
 import com.library.loan.models.Loan;
 import com.library.loan.repositories.LoanRepository;
 import com.library.loan.services.BookClient;
@@ -98,6 +99,20 @@ import static org.mockito.Mockito.*;
         assertNotNull(loanDTO.getLoanReturnDate());
         assertEquals(LocalDate.now(),loanDTO.getLoanReturnDate());
         verify(kafkaTemplate).send(eq("book_returned"),any(BookEventDTO.class));
+    }
+
+    @Test
+    void shouldThrowMaxLoansException(){
+       int userId = 1;
+       UserDTO userDTO = new UserDTO(userId,"userTest","userTest123","userTest@test.com");
+       List<Loan> loanList = new ArrayList<>();
+       loanList.add(new Loan(1,1,userId,LocalDate.now(),LocalDate.now().plusMonths(1),null));
+       loanList.add(new Loan(2,2,userId,LocalDate.now(),LocalDate.now().plusMonths(1),null));
+       loanList.add(new Loan(3,3,userId,LocalDate.now(),LocalDate.now().plusMonths(1),null));
+       loanList.add(new Loan(4,4,userId,LocalDate.now(),LocalDate.now().plusMonths(1),null));
+       when(userClient.findUserById(userId)).thenReturn(userDTO);
+       when(loanRepository.findLoansByUserId(userId)).thenReturn(loanList);
+       assertThrows(MaxLoansException.class,() ->{loanService.getListLoansByUserId(userId);});
     }
 
 }
