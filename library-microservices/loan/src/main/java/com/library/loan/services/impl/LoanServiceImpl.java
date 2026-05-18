@@ -6,6 +6,7 @@ import com.library.loan.dtos.LoanBookDTO;
 import com.library.loan.dtos.LoanDTO;
 import com.library.loan.error.ActiveLoanException;
 import com.library.loan.error.IdNotFoundException;
+import com.library.loan.error.MaxLoansException;
 import com.library.loan.mappers.LoanMapper;
 import com.library.loan.models.Loan;
 import com.library.loan.repositories.LoanRepository;
@@ -17,6 +18,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,11 +38,16 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public List<LoanBookDTO> getListLoansByUserId(int userId) {
-        userClient.findUserById(userId);
+        if (userClient.findUserById(userId) == null) {
+            throw new IdNotFoundException("The user does not exist");
+        }
         //stores the loan and book data
         List<LoanBookDTO> loanBookDTOList = new ArrayList<>();
         //stores all the loans from a user
         List<LoanDTO> loanDTOList = LoanMapper.changeToListDTO(loanRepository.findLoansByUserId(userId));
+        if(!isMaxLoans(loanDTOList)){
+            throw new MaxLoansException("User has reached max active loans");
+        }
         //stores books ids from the loans
         List<Integer> booksIds = loanDTOList.stream().map(LoanDTO::getBookId).distinct().toList();
         //stores book info
@@ -52,6 +59,21 @@ public class LoanServiceImpl implements LoanService {
             loanBookDTOList.add(new LoanBookDTO(loanDTO.getLoanId(), bookDTOMap.get(loanDTO.getBookId()), loanDTO.getUserId(), loanDTO.getLoanDate(), loanDTO.getLoanExpirationDate(), loanDTO.getLoanReturnDate()));
         }
         return loanBookDTOList;
+    }
+
+    private List<LoanDTO> getActiveLoans(List<LoanDTO> loanDTOList){
+        List<LoanDTO> returnLoans = new ArrayList<>();
+        for (LoanDTO loanDTO: loanDTOList) {
+            if(loanDTO.getLoanReturnDate() == null && LocalDate.now().isBefore(loanDTO.getLoanExpirationDate())){
+                returnLoans.add(loanDTO);
+            }
+        }
+        return returnLoans;
+    }
+
+    private boolean isMaxLoans(List<LoanDTO> loanDTOList){
+        List<LoanDTO> activeLoans = getActiveLoans(loanDTOList);
+        return activeLoans.size()<=3;
     }
 
     @Override
